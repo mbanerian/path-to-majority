@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Path to Majority 2026</title>
+<style>
+:root{--bg:#f5f6f8;--card:#fff;--ink:#14181f;--mute:#667085;--line:#e3e6eb;--rep:#c8312b;--dem:#1f5fbf;--tbd:#98a2b3;--repbg:#fbe9e8;--dembg:#e6eefb;--tbdbg:#eef0f3;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1116;--card:#171b22;--ink:#eef0f4;--mute:#9aa4b2;--line:#262c36;--rep:#ef6a63;--dem:#6ea3f5;--tbd:#6b7686;--repbg:#3a1d1c;--dembg:#1b2b47;--tbdbg:#222832}}
+:root[data-theme="dark"]{--bg:#0e1116;--card:#171b22;--ink:#eef0f4;--mute:#9aa4b2;--line:#262c36;--rep:#ef6a63;--dem:#6ea3f5;--tbd:#6b7686;--repbg:#3a1d1c;--dembg:#1b2b47;--tbdbg:#222832}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:20px 16px 40px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:10px;margin-bottom:18px}
+h1{margin:0;font-size:26px;letter-spacing:-.02em}
+.sub{color:var(--mute);font-size:13px;display:flex;align-items:center;gap:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--tbd)}
+.dot.live{background:#2ea043;box-shadow:0 0 0 3px rgba(46,160,67,.2)}
+.dot.err{background:var(--rep)}
+button{font:inherit;font-size:13px;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer}
+button:hover{border-color:var(--mute)}
+.banner{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--rep);border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:14px}
+.banner.info{border-left-color:var(--dem)}
+.maj{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin-bottom:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+.card h2{margin:0 0 12px;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--mute);font-weight:600}
+.prow{display:grid;grid-template-columns:90px 1fr auto;align-items:center;gap:10px;margin:8px 0}
+.prow b{font-size:14px}
+.track{height:12px;background:var(--tbdbg);border-radius:6px;overflow:hidden}
+.fill{height:100%;border-radius:6px;transition:width .5s}
+.fill.r{background:var(--rep)}.fill.d{background:var(--dem)}
+.num{font-variant-numeric:tabular-nums;font-size:22px;font-weight:700;text-align:right;min-width:90px}
+.num small{font-size:12px;font-weight:500;color:var(--mute)}
+.stats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 16px;flex:1;min-width:130px}
+.stat span{display:block;font-size:12px;color:var(--mute)}
+.stat b{font-size:22px;font-variant-numeric:tabular-nums}
+.sec{display:flex;align-items:baseline;gap:8px;margin:22px 0 10px}
+.sec h3{margin:0;font-size:18px}
+.sec span{color:var(--mute);font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.seat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px 14px}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:10px}
+.name{font-weight:650}
+.name small{display:block;color:var(--mute);font-weight:400;font-size:12px}
+.pill{font-size:11px;font-weight:700;letter-spacing:.04em;padding:3px 9px;border-radius:99px;white-space:nowrap;background:var(--tbdbg);color:var(--mute)}
+.pill.r{background:var(--repbg);color:var(--rep)}.pill.d{background:var(--dembg);color:var(--dem)}
+.split{display:flex;height:8px;border-radius:4px;overflow:hidden;background:var(--tbdbg);margin-bottom:8px}
+.split i{display:block;height:100%;transition:width .5s}
+.split .r{background:var(--rep)}.split .d{background:var(--dem)}
+.votes{display:flex;justify-content:space-between;font-size:13px;font-variant-numeric:tabular-nums}
+.votes .r{color:var(--rep)}.votes .d{color:var(--dem)}
+.rep{margin-top:6px;font-size:12px;color:var(--mute)}
+@media (max-width:480px){h1{font-size:22px}.prow{grid-template-columns:76px 1fr auto}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div>
+    <h1>Path to Majority 2026</h1>
+    <div class="sub"><span class="dot" id="dot"></span><span id="status">Loading data…</span></div>
+  </div>
+  <button id="refresh">Refresh now</button>
+</header>
+<div id="banner"></div>
+<div id="app"></div>
+</div>
+<script>
+(function(){
+var CSV_URL="https://docs.google.com/spreadsheets/d/e/2PACX-1vSJOY9tubhwzknXMKX4tQahe38MXceExh4F5eAYGya2-R-JWG_WGX8qiyV9gzRoBWraMzacnNtFJ2Jc/pub?gid=0&single=true&output=csv";
+var $=function(id){return document.getElementById(id)};
+var lastGood=null;
+
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function num(s){var n=parseFloat(String(s).replace(/[^0-9.\-]/g,""));return isNaN(n)?0:n}
+function fmt(n){return n.toLocaleString("en-US")}
+
+function parse(values){
+  var g=function(r,c){var v=(values[r]||[])[c];return v==null?"":String(v).trim()};
+  var out={majorities:[],tables:[]},R=values.length;
+  for(var r=0;r<R;r++){
+    var a=g(r,0);
+    if(/majority/i.test(a)){
+      var m={name:a.replace(/\s*\(.*$/,""),needed:num((a.match(/\((\d+)/)||[])[1]),rep:0,dem:0};
+      for(var k=r+1;k<R&&k<r+6;k++){
+        var t=g(k,0).toLowerCase();
+        if(/majority/.test(t))break;
+        if(t==="republican")m.rep=num(g(k,1));
+        if(t==="democrat")m.dem=num(g(k,1));
+      }
+      out.majorities.push(m);
+    }
+  }
+  [2,7].forEach(function(c0){
+    for(var r=0;r<R;r++){
+      if(g(r,c0).toLowerCase()==="seat"){
+        var t={title:g(r-1,c0)||"Races",rows:[]};
+        for(var k=r+1;k<R&&g(k,c0)!=="";k++){
+          t.rows.push({seat:g(k,c0),result:g(k,c0+1),rep:num(g(k,c0+2)),dem:num(g(k,c0+3)),reporting:g(k,c0+4)});
+        }
+        if(t.rows.length)out.tables.push(t);
+        break;
+      }
+    }
+  });
+  return out;
+}
+
+function side(res){
+  var s=res.toLowerCase();
+  if(!s||s==="tbd"||s==="pending"||s==="tbc")return"";
+  if(/^(r\b|rep)/.test(s)||/\brep(ublican)?\b/.test(s))return"r";
+  if(/^(d\b|dem)/.test(s)||/\bdem(ocrat)?\b/.test(s))return"d";
+  if(/\b(loss|lose|lost)\b/.test(s))return"d";
+  if(/\bwin(s|ner)?\b|\bwon\b/.test(s))return"r";
+  return"x";
+}
+
+function majCard(m){
+  var need=m.needed||1;
+  function row(label,n,cls){
+    var pct=Math.min(100,n/need*100);
+    return '<div class="prow"><b>'+label+'</b><div class="track"><div class="fill '+cls+'" style="width:'+pct+'%"></div></div><div class="num">'+fmt(n)+' <small>/ '+fmt(m.needed)+'</small></div></div>';
+  }
+  var gap=function(n){return Math.max(0,m.needed-n)};
+  return '<div class="card"><h2>'+esc(m.name)+' majority · '+fmt(m.needed)+' needed</h2>'
+    +row("Republican",m.rep,"r")+row("Democrat",m.dem,"d")
+    +'<div class="rep">Republicans need '+fmt(gap(m.rep))+' more · Democrats need '+fmt(gap(m.dem))+' more</div></div>';
+}
+
+function seatCard(s){
+  var tot=s.rep+s.dem,rp=tot?s.rep/tot*100:0,dp=tot?s.dem/tot*100:0;
+  var sd=side(s.result),cls=sd==="r"?"r":sd==="d"?"d":"";
+  var m=s.seat.match(/^(.*?)\s*\((.*)\)\s*$/);
+  var nm=m?m[1]:s.seat,sub=m?m[2]:"";
+  var chamber=/^HD/i.test(nm)?"House":/^SD/i.test(nm)?"Senate":"";
+  var nameHtml=esc(nm)+(sub||chamber?'<small>'+esc([sub,chamber].filter(Boolean).join(" · "))+'</small>':"");
+  return '<div class="seat"><div class="top"><div class="name">'+nameHtml+'</div><span class="pill '+cls+'">'+esc(s.result||"TBD")+'</span></div>'
+    +'<div class="split"><i class="r" style="width:'+rp+'%"></i><i class="d" style="width:'+dp+'%"></i></div>'
+    +'<div class="votes"><span class="r">R '+fmt(s.rep)+'</span><span class="d">D '+fmt(s.dem)+'</span></div>'
+    +(s.reporting?'<div class="rep">Reporting: '+esc(s.reporting)+'</div>':'')+'</div>';
+}
+
+function render(d){
+  var all=[];d.tables.forEach(function(t){all=all.concat(t.rows)});
+  var called=all.filter(function(s){return side(s.result)!==""}).length;
+  var r=all.filter(function(s){return side(s.result)==="r"}).length;
+  var dm=all.filter(function(s){return side(s.result)==="d"}).length;
+  var html='<div class="maj">'+d.majorities.map(majCard).join("")+'</div>';
+  html+='<div class="stats"><div class="stat"><span>Races tracked</span><b>'+all.length+'</b></div>'
+    +'<div class="stat"><span>Called</span><b>'+called+'</b></div>'
+    +'<div class="stat"><span>Republican wins</span><b style="color:var(--rep)">'+r+'</b></div>'
+    +'<div class="stat"><span>Democrat wins</span><b style="color:var(--dem)">'+dm+'</b></div></div>';
+  d.tables.forEach(function(t){
+    html+='<div class="sec"><h3>'+esc(t.title)+'</h3><span>'+t.rows.length+' races</span></div><div class="grid">'+t.rows.map(seatCard).join("")+'</div>';
+  });
+  $("app").innerHTML=html;
+}
+
+function setStatus(kind,text){
+  $("dot").className="dot"+(kind?" "+kind:"");
+  $("status").textContent=text;
+}
+function banner(text,info){
+  $("banner").innerHTML=text?'<div class="banner'+(info?" info":"")+'">'+text+'</div>':"";
+}
+
+function parseCSV(t){
+  var rows=[],row=[],f="",q=false;
+  for(var i=0;i<t.length;i++){
+    var c=t[i];
+    if(q){
+      if(c==='"'){if(t[i+1]==='"'){f+='"';i++}else q=false}else f+=c;
+    }else if(c==='"')q=true;
+    else if(c===","){row.push(f);f=""}
+    else if(c==="\n"){row.push(f);rows.push(row);row=[];f=""}
+    else if(c!=="\r")f+=c;
+  }
+  if(f!==""||row.length){row.push(f);rows.push(row)}
+  return rows;
+}
+
+var busy=false;
+function load(){
+  if(busy)return;busy=true;
+  fetch(CSV_URL+"&_="+Date.now(),{cache:"no-store"})
+    .then(function(r){if(!r.ok)throw new Error("http");return r.text()})
+    .then(function(t){
+      var d=parse(parseCSV(t));
+      if(!d.majorities.length&&!d.tables.length)throw new Error("empty");
+      lastGood=d;banner("");render(d);
+      setStatus("live","Live · updated "+new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit",second:"2-digit"})+" · refreshes every 30s");
+    })
+    .catch(function(){
+      if(lastGood){setStatus("err","Connection hiccup · showing last data");}
+      else{setStatus("err","Could not load data");banner("The data couldn’t be loaded. Check your connection and try Refresh.");}
+    })
+    .then(function(){busy=false});
+}
+$("refresh").addEventListener("click",load);
+document.addEventListener("visibilitychange",function(){if(!document.hidden)load()});
+load();
+setInterval(load,30000);
+})();
+</script>
+</body>
+</html>
